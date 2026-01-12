@@ -19,14 +19,14 @@ public class ScheduleService {
     @Transactional
     public ScheduleCreateResponse save(ScheduleCreateRequest request) {
         Schedule schedule = new Schedule(
-                request.getAuthorName(),
+                request.getUserId(), // 작성자명 -> 유저 고유 식별자로 변경
                 request.getTitle(),
                 request.getContent()
         );
         Schedule savedSchedule = scheduleRepository.save(schedule);
         return new ScheduleCreateResponse(
                 savedSchedule.getId(),
-                savedSchedule.getAuthorName(),
+                savedSchedule.getUserId(), // 작성자명 -> 유저 고유 식별자로 변경
                 savedSchedule.getTitle(),
                 savedSchedule.getContent(),
                 savedSchedule.getCreatedAt(),
@@ -41,7 +41,7 @@ public class ScheduleService {
         for (Schedule schedule : schedules) {
             ScheduleGetResponse dto = new ScheduleGetResponse(
                     schedule.getId(),
-                    schedule.getAuthorName(),
+                    schedule.getUserId(), // 작성자명 -> 유저 고유 식별자로 변경
                     schedule.getTitle(),
                     schedule.getContent(),
                     schedule.getCreatedAt(),
@@ -59,7 +59,7 @@ public class ScheduleService {
         );
         return new ScheduleGetResponse(
                 schedule.getId(),
-                schedule.getAuthorName(),
+                schedule.getUserId(), // 작성자명 -> 유저 고유 식별자로 변경
                 schedule.getTitle(),
                 schedule.getContent(),
                 schedule.getCreatedAt(),
@@ -72,11 +72,11 @@ public class ScheduleService {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
                 () -> new IllegalStateException("존재하지 않는 일정입니다.")
         );
-        schedule.update(request.getAuthorName(), request.getTitle(), request.getContent());
+        schedule.update(request.getUserId(), request.getTitle(), request.getContent()); // 작성자명 -> 유저 고유 식별자로 변경
 
         return new ScheduleUpdateResponse(
                 schedule.getId(),
-                schedule.getAuthorName(),
+                schedule.getUserId(), // 작성자명 -> 유저 고유 식별자로 변경
                 schedule.getTitle(),
                 schedule.getContent(),
                 schedule.getCreatedAt(),
