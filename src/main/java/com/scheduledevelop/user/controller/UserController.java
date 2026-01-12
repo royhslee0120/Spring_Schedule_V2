@@ -25,10 +25,17 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public void login(
-            @Valid @RequestBody LoginUserRequest request, HttpSession session
+    public ResponseEntity<String> login(
+            @Valid @RequestBody LoginUserRequest request,
+            HttpSession session
     ) {
-        LoginUserResponse result = userService.signin(request);
+        LoginUserResponse result = userService.login(request);
+        SessionUser sessionUser = new SessionUser(
+                result.getId(),
+                result.getEmail()
+        );
+        session.setAttribute("loginUser", sessionUser);
+        return ResponseEntity.ok("success");
     }
 
     @PostMapping("/logout")

@@ -3,6 +3,8 @@ package com.scheduledevelop.schedule.service;
 import com.scheduledevelop.schedule.dto.*;
 import com.scheduledevelop.schedule.entity.Schedule;
 import com.scheduledevelop.schedule.repository.ScheduleRepository;
+import com.scheduledevelop.user.entity.User;
+import com.scheduledevelop.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,18 +17,23 @@ import java.util.List;
 public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
+    private final UserRepository userRepository; // 로그인 기능을 구현하기 위해서 추가
 
     @Transactional
-    public ScheduleCreateResponse save(ScheduleCreateRequest request) {
+    public ScheduleCreateResponse save(Long userId, ScheduleCreateRequest request) {
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new IllegalStateException("없는 유저입니다.")
+        );
         Schedule schedule = new Schedule(
-                request.getUserId(), // 작성자명 -> 유저 고유 식별자로 변경
+                request.getName(),
                 request.getTitle(),
-                request.getContent()
+                request.getContent(),
+                user
         );
         Schedule savedSchedule = scheduleRepository.save(schedule);
         return new ScheduleCreateResponse(
                 savedSchedule.getId(),
-                savedSchedule.getUserId(), // 작성자명 -> 유저 고유 식별자로 변경
+                savedSchedule.getName(),
                 savedSchedule.getTitle(),
                 savedSchedule.getContent(),
                 savedSchedule.getCreatedAt(),
@@ -41,7 +48,7 @@ public class ScheduleService {
         for (Schedule schedule : schedules) {
             ScheduleGetResponse dto = new ScheduleGetResponse(
                     schedule.getId(),
-                    schedule.getUserId(), // 작성자명 -> 유저 고유 식별자로 변경
+                    schedule.getName(), // 작성자명 -> 유저 고유 식별자로 변경
                     schedule.getTitle(),
                     schedule.getContent(),
                     schedule.getCreatedAt(),
@@ -59,7 +66,7 @@ public class ScheduleService {
         );
         return new ScheduleGetResponse(
                 schedule.getId(),
-                schedule.getUserId(), // 작성자명 -> 유저 고유 식별자로 변경
+                schedule.getName(), // 작성자명 -> 유저 고유 식별자로 변경
                 schedule.getTitle(),
                 schedule.getContent(),
                 schedule.getCreatedAt(),
@@ -72,11 +79,11 @@ public class ScheduleService {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
                 () -> new IllegalStateException("존재하지 않는 일정입니다.")
         );
-        schedule.update(request.getUserId(), request.getTitle(), request.getContent()); // 작성자명 -> 유저 고유 식별자로 변경
+        schedule.update(request.getName(), request.getTitle(), request.getContent()); // 작성자명 -> 유저 고유 식별자로 변경
 
         return new ScheduleUpdateResponse(
                 schedule.getId(),
-                schedule.getUserId(), // 작성자명 -> 유저 고유 식별자로 변경
+                schedule.getName(), // 작성자명 -> 유저 고유 식별자로 변경
                 schedule.getTitle(),
                 schedule.getContent(),
                 schedule.getCreatedAt(),
