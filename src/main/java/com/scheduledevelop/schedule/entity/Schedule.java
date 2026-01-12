@@ -1,5 +1,6 @@
 package com.scheduledevelop.schedule.entity;
 
+import com.scheduledevelop.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -14,20 +15,25 @@ public class Schedule extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    private String authorName; // 작성자명
+    private String userId; // 작성자명 -> 유저 고유 식별자로 변경
     private String title; // 일정 제목
     private String content; // 일정 내용
 
+    // 연관관계의 주인
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-    public Schedule(String authorName, String title, String content) {
-        this.authorName = authorName;
+
+    public Schedule(String userId, String title, String content) { // 작성자명 -> 유저 고유 식별자로 변경
+        this.userId = userId; // 작성자명 -> 유저 고유 식별자로 변경
         this.title = title;
         this.content = content;
 
     }
 
-    public void update(String authorName, String title, String content) {
-        this.authorName = authorName;
+    public void update(String userId, String title, String content) { // 작성자명 -> 유저 고유 식별자로 변경
+        this.userId = userId; // 작성자명 -> 유저 고유 식별자로 변경
         this.title = title;
         this.content = content;
     }
