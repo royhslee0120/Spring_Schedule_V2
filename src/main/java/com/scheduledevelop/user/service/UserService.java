@@ -35,7 +35,7 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public LoginUserResponse signin(@Valid LoginUserRequest request) {
+    public LoginUserResponse login(@Valid LoginUserRequest request) {
         User user = userRepository.findByEmail(request.getEmail()).orElseThrow(
                 () -> new IllegalStateException("유효하지 않은 이메일입니다.")
         );

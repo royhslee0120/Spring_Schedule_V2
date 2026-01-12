@@ -2,6 +2,7 @@ package com.scheduledevelop.schedule.controller;
 
 import com.scheduledevelop.schedule.dto.*;
 import com.scheduledevelop.schedule.service.ScheduleService;
+import com.scheduledevelop.user.dto.SessionUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,8 +18,12 @@ public class ScheduleController {
 
     @PostMapping("/schedules")
     public ResponseEntity<ScheduleCreateResponse> create(
+            @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser,
             @RequestBody ScheduleCreateRequest request
     ) {
+        if (sessionUser == null) {
+            throw new IllegalStateException("로그인이 필요합니다.");
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body(scheduleService.save(request));
     }
 
