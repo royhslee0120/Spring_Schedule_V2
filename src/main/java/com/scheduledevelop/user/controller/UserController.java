@@ -19,7 +19,7 @@ public class UserController {
 
     @PostMapping("/signup")
     public ResponseEntity<SignupUserResponse> signup(
-            @RequestBody SignupUserRequest request
+            @Valid @RequestBody SignupUserRequest request
     ) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.save(request));
     }
@@ -50,7 +50,23 @@ public class UserController {
     }
 
     @GetMapping("/users/{userId}")
-    public ResponseEntity<UserGetResponse> getOne(@PathVariable Long memberId) {
-        return ResponseEntity.ok(userService.findOne(memberId));
+    public ResponseEntity<UserGetResponse> getOne(@PathVariable Long userId) { // 오류 코드 수정
+        return ResponseEntity.ok(userService.findOne(userId)); // 오류 코드 수정
+    }
+
+    @PutMapping("/users/{userId}")
+    public ResponseEntity<UserUpdateResponse> update(
+            @PathVariable Long userId,
+            @Valid @RequestBody UserUpdateRequest request
+    ) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.update(userId, request));
+    }
+
+    @DeleteMapping("/users/{userId}")
+    public void delete(
+            @PathVariable Long userId,
+            @RequestParam String password
+    ) {
+        userService.delete(userId, password);
     }
 }
