@@ -25,7 +25,6 @@ public class ScheduleService {
                 () -> new IllegalStateException("없는 유저입니다.")
         );
         Schedule schedule = new Schedule(
-                request.getName(),
                 request.getTitle(),
                 request.getContent(),
                 user
@@ -33,7 +32,7 @@ public class ScheduleService {
         Schedule savedSchedule = scheduleRepository.save(schedule);
         return new ScheduleCreateResponse(
                 savedSchedule.getId(),
-                savedSchedule.getName(),
+                savedSchedule.getUser().getName(),
                 savedSchedule.getTitle(),
                 savedSchedule.getContent(),
                 savedSchedule.getCreatedAt(),
@@ -48,7 +47,7 @@ public class ScheduleService {
         for (Schedule schedule : schedules) {
             ScheduleGetResponse dto = new ScheduleGetResponse(
                     schedule.getId(),
-                    schedule.getName(), // 작성자명 -> 유저 고유 식별자로 변경
+                    schedule.getUser().getName(), // 작성자명 -> 유저 고유 식별자로 변경
                     schedule.getTitle(),
                     schedule.getContent(),
                     schedule.getCreatedAt(),
@@ -66,7 +65,7 @@ public class ScheduleService {
         );
         return new ScheduleGetResponse(
                 schedule.getId(),
-                schedule.getName(), // 작성자명 -> 유저 고유 식별자로 변경
+                schedule.getUser().getName(), // 작성자명 -> 유저 고유 식별자로 변경
                 schedule.getTitle(),
                 schedule.getContent(),
                 schedule.getCreatedAt(),
@@ -75,15 +74,17 @@ public class ScheduleService {
     }
 
     @Transactional
-    public ScheduleUpdateResponse update(long scheduleId, ScheduleUpdateRequest request) {
+    public ScheduleUpdateResponse update(Long loginUserId, Long scheduleId, ScheduleUpdateRequest request) {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
                 () -> new IllegalStateException("존재하지 않는 일정입니다.")
         );
-        schedule.update(request.getName(), request.getTitle(), request.getContent()); // 작성자명 -> 유저 고유 식별자로 변경
-
+        if (!schedule.getUser().getId().equals(loginUserId)) {
+            throw new IllegalStateException("작성자만 수정할 수 있습니다.");
+        }
+        schedule.update(request.getTitle(), request.getContent());
         return new ScheduleUpdateResponse(
                 schedule.getId(),
-                schedule.getName(), // 작성자명 -> 유저 고유 식별자로 변경
+                schedule.getUser().getName(), // 작성자명 -> 유저 고유 식별자로 변경
                 schedule.getTitle(),
                 schedule.getContent(),
                 schedule.getCreatedAt(),
@@ -92,13 +93,16 @@ public class ScheduleService {
     }
 
     @Transactional
-    public void delete(Long scheduleId) {
-        boolean existence = scheduleRepository.existsById(scheduleId);
-        // 존재하지 않으면
-        if (!existence) {
-            throw new IllegalStateException("존재하지 않는 메모입니다.");
+    public void delete(Long loginUserId, Long scheduleId) {
+        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(
+                () -> new IllegalStateException("존재하지 않는 일정입니다.")
+        );
+
+        // 작성자 검증: 로그인한 유저가 작성자인지 확인
+        if (!schedule.getUser().getId().equals(loginUserId)) {
+            throw new IllegalStateException("작성자만 삭제할 수 있습니다.");
         }
-        // 존재하면
-        scheduleRepository.deleteById(scheduleId);
+
+        scheduleRepository.delete(schedule);
     }
 }

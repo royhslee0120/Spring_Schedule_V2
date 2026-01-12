@@ -15,7 +15,6 @@ public class Schedule extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    private String name; // 작성자명 -> 유저 고유 식별자로 변경
     private String title; // 일정 제목
     private String content; // 일정 내용
 
@@ -25,16 +24,14 @@ public class Schedule extends BaseEntity {
     private User user;
 
 
-    public Schedule(String name, String title, String content, User user) { // 작성자명 -> 유저 고유 식별자로 변경
-        this.name = name; // 작성자명 -> 유저 고유 식별자로 변경
+    public Schedule(String title, String content, User user) { // 작성자명 -> 유저 고유 식별자로 변경
         this.title = title;
         this.content = content;
         this.user = user;
 
     }
 
-    public void update(String name, String title, String content) { // 작성자명 -> 유저 고유 식별자로 변경
-        this.name = name; // 작성자명 -> 유저 고유 식별자로 변경
+    public void update(String title, String content) { // 작성자명 -> 유저 고유 식별자로 변경
         this.title = title;
         this.content = content;
     }

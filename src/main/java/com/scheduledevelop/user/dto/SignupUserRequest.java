@@ -6,8 +6,8 @@ import lombok.Getter;
 @Getter
 public class SignupUserRequest {
 
+    private String name; // 회원가입시 이름도 받는다.
     private String email;
-
     @Size(min = 8, message = "비밀번호는 8자리 이상이어야 합니다.")
     private String password;
 }

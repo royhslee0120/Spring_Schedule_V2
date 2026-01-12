@@ -21,6 +21,7 @@ public class UserService {
     @Transactional
     public SignupUserResponse save(SignupUserRequest request) {
         User user = new User(
+                request.getName(),
                 request.getEmail(),
                 request.getPassword()
         );
