@@ -24,7 +24,7 @@ public class ScheduleController {
         if (sessionUser == null) {
             throw new IllegalStateException("로그인이 필요합니다.");
         }
-        return ResponseEntity.status(HttpStatus.CREATED).body(scheduleService.save(request));
+        return ResponseEntity.status(HttpStatus.CREATED).body(scheduleService.save(sessionUser.getId(), request)); // 수정 사항 수정
     }
 
     @GetMapping("/schedules")
